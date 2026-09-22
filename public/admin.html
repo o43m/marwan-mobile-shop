@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>لوحة الإدارة - مروان</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f5f5f5; color: #333; }
+    .admin-container { display: grid; grid-template-columns: 250px 1fr; min-height: 100vh; }
+    .sidebar { background: linear-gradient(180deg, #1a3a52 0%, #2c5aa0 100%); color: white; padding: 20px; position: fixed; left: 0; top: 0; width: 250px; height: 100vh; overflow-y: auto; }
+    .sidebar h2 { font-size: 18px; margin-bottom: 30px; padding-bottom: 15px; border-bottom: 2px solid rgba(255,255,255,0.2); }
+    .sidebar-menu { list-style: none; }
+    .sidebar-menu li { margin-bottom: 10px; }
+    .sidebar-menu button { width: 100%; background: rgba(255,255,255,0.1); color: white; border: none; padding: 12px 15px; border-radius: 4px; cursor: pointer; text-align: right; font-size: 14px; transition: all 0.3s; }
+    .sidebar-menu button:hover, .sidebar-menu button.active { background: rgba(255,255,255,0.3); padding-right: 20px; }
+    .main-content { margin-right: 250px; padding: 20px; }
+    .section { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin-bottom: 20px; display: none; }
+    .section.active { display: block; }
+    .section h2 { color: #1a3a52; margin-bottom: 20px; border-bottom: 3px solid #2c5aa0; padding-bottom: 10px; }
+    .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px; }
+    .stat-card { background: linear-gradient(135deg, #2c5aa0 0%, #1a3a52 100%); color: white; padding: 20px; border-radius: 8px; text-align: center; }
+    .stat-card .number { font-size: 32px; font-weight: bold; margin: 10px 0; }
+    .stat-card .label { font-size: 14px; opacity: 0.9; }
+    .table-container { overflow-x: auto; margin-top: 20px; }
+    table { width: 100%; border-collapse: collapse; }
+    table th { background: #f0f0f0; padding: 12px; text-align: right; font-weight: bold; color: #1a3a52; border-bottom: 2px solid #2c5aa0; }
+    table td { padding: 12px; border-bottom: 1px solid #eee; }
+    table tr:hover { background: #f9f9f9; }
+    .btn { padding: 8px 12px; border: none; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: bold; transition: all 0.3s; }
+    .btn-primary { background: #2c5aa0; color: white; }
+    .btn-primary:hover { background: #1a3a52; }
+    .btn-danger { background: #e74c3c; color: white; }
+    .btn-danger:hover { background: #c0392b; }
+    .btn-group { display: flex; gap: 8px; }
+    .form-group { margin-bottom: 15px; }
+    .form-group label { display: block; margin-bottom: 5px; font-weight: bold; color: #1a3a52; }
+    .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-family: inherit; }
+    .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; }
+    .modal.active { display: flex; }
+    .modal-content { background: white; padding: 30px; border-radius: 8px; max-width: 500px; width: 90%; max-height: 90vh; overflow-y: auto; }
+    .modal-close { position: absolute; top: 10px; right: 10px; background: none; border: none; font-size: 24px; cursor: pointer; color: #666; }
+    .status { padding: 5px 10px; border-radius: 4px; font-size: 12px; font-weight: bold; display: inline-block; }
+    .status.pending { background: #f39c12; color: white; }
+    .status.completed { background: #27ae60; color: white; }
+    @media (max-width: 768px) {
+      .admin-container { grid-template-columns: 1fr; }
+      .sidebar { width: 100%; height: auto; position: relative; }
+      .main-content { margin-right: 0; }
+      .stat-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body>
+  <div class="admin-container">
+    <aside class="sidebar">
+      <h2>🔧 الإدارة</h2>
+      <ul class="sidebar-menu">
+        <li><button class="menu-btn active" data-section="dashboard">📊 لوحة التحكم</button></li>
+        <li><button class="menu-btn" data-section="products">📱 المنتجات</button></li>
+        <li><button class="menu-btn" data-section="orders">🛒 الطلبيات</button></li>
+        <li><button class="menu-btn" data-section="reservations">📅 الحجوزات</button></li>
+        <li><button class="menu-btn" data-section="maintenance">🔧 الصيانة</button></li>
+        <li><button class="menu-btn" data-section="installments">💰 الأقساط</button></li>
+        <li><button class="menu-btn" data-section="employees">👨‍💼 الموظفون</button></li>
+        <li><button class="menu-btn" data-section="reports">📈 التقارير</button></li>
+        <li style="margin-top: 20px;"><a href="/" style="color: white; text-decoration: none; display: block; padding: 12px; text-align: center; background: rgba(255,255,255,0.1); border-radius: 4px;">← العودة للمتجر</a></li>
+      </ul>
+    </aside>
+
+    <main class="main-content">
+      <section id="dashboard" class="section active">
+        <h2>📊 لوحة التحكم</h2>
+        <div class="stat-grid" id="statsGrid"></div>
+        <h3 style="margin-top: 30px; color: #1a3a52;">الطلبيات الأخيرة</h3>
+        <div class="table-container" id="recentOrders"></div>
+      </section>
+
+      <section id="products" class="section">
+        <h2>📱 المنتجات</h2>
+        <button class="btn btn-primary" onclick="showAddProduct()" style="margin-bottom: 20px;">+ إضافة منتج</button>
+        <div class="table-container" id="productsTable"></div>
+      </section>
+
+      <section id="orders" class="section">
+        <h2>🛒 الطلبيات</h2>
+        <div class="table-container" id="ordersTable"></div>
+      </section>
+
+      <section id="reservations" class="section">
+        <h2>📅 الحجوزات</h2>
+        <div class="table-container" id="reservationsTable"></div>
+      </section>
+
+      <section id="maintenance" class="section">
+        <h2>🔧 طلبات الصيانة</h2>
+        <div class="table-container" id="maintenanceTable"></div>
+      </section>
+
+      <section id="installments" class="section">
+        <h2>💰 الأقساط</h2>
+        <div class="table-container" id="installmentsTable"></div>
+      </section>
+
+      <section id="employees" class="section">
+        <h2>👨‍💼 الموظفون</h2>
+        <button class="btn btn-primary" onclick="showAddEmployee()" style="margin-bottom: 20px;">+ إضافة موظف</button>
+        <div class="table-container" id="employeesTable"></div>
+      </section>
+
+      <section id="reports" class="section">
+        <h2>📈 التقارير</h2>
+        <div id="reportsContent"></div>
+      </section>
+    </main>
+  </div>
+
+  <div id="productModal" class="modal">
+    <div class="modal-content">
+      <button class="modal-close" onclick="closeModal('productModal')">×</button>
+      <h2>إضافة/تعديل منتج</h2>
+      <div class="form-group">
+        <label>الاسم</label>
+        <input type="text" id="productName">
+        <label>الفئة</label>
+        <select id="productCategory">
+          <option value="phones">هواتف ذكية</option>
+          <option value="accessories">ملحقات</option>
+        </select>
+        <label>السعر</label>
+        <input type="number" id="productPrice">
+        <label>المخزون</label>
+        <input type="number" id="productStock">
+        <label>الوصف</label>
+        <textarea id="productDescription"></textarea>
+        <button class="btn btn-primary" onclick="saveProduct()" style="width: 100%; margin-top: 15px;">حفظ</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="employeeModal" class="modal">
+    <div class="modal-content">
+      <button class="modal-close" onclick="closeModal('employeeModal')">×</button>
+      <h2>إضافة/تعديل موظف</h2>
+      <div class="form-group">
+        <label>الاسم</label>
+        <input type="text" id="employeeName">
+        <label>البريد الإلكتروني</label>
+        <input type="email" id="employeeEmail">
+        <label>الدور</label>
+        <select id="employeeRole">
+          <option value="admin">مدير</option>
+          <option value="sales">مبيعات</option>
+        </select>
+        <button class="btn btn-primary" onclick="saveEmployee()" style="width: 100%; margin-top: 15px;">حفظ</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let currentEditId = null;
+
+    async function loadDashboard() {
+      try {
+        const reports = await fetch('/api/admin/reports').then(r => r.json());
+        const orders = await fetch('/api/admin/orders').then(r => r.json());
+        document.getElementById('statsGrid').innerHTML = `
+          <div class="stat-card">
+            <div class="label">إجمالي الطلبيات</div>
+            <div class="number">${reports.totalOrders}</div>
+          </div>
+          <div class="stat-card">
+            <div class="label">الإيرادات</div>
+            <div class="number">${reports.totalRevenue}</div>
+          </div>
+          <div class="stat-card">
+            <div class="label">الزبائن</div>
+            <div class="number">${reports.totalCustomers}</div>
+          </div>
+          <div class="stat-card">
+            <div class="label">المخزون</div>
+            <div class="number">${reports.inventory}</div>
+          </div>
+        `;
+        const recentOrders = orders.slice(-5).reverse();
+        document.getElementById('recentOrders').innerHTML = `
+          <table>
+            <thead><tr><th>#</th><th>الزبون</th><th>المجموع</th><th>الحالة</th><th>التاريخ</th></tr></thead>
+            <tbody>${recentOrders.map(o => `<tr><td>${o.id}</td><td>${o.customer.name}</td><td>${o.total} ر.س</td><td><span class="status ${o.status}">${o.status}</span></td><td>${new Date(o.date).toLocaleDateString('ar')}</td></tr>`).join('')}</tbody>
+          </table>
+        `;
+      } catch (e) { console.error('Error:', e); }
+    }
+
+    async function loadProducts() {
+      try {
+        const products = await fetch('/api/products').then(r => r.json());
+        document.getElementById('productsTable').innerHTML = `
+          <table>
+            <thead><tr><th>#</th><th>الاسم</th><th>الفئة</th><th>السعر</th><th>المخزون</th><th>الإجراءات</th></tr></thead>
+            <tbody>${products.map(p => `<tr><td>${p.id}</td><td>${p.name}</td><td>${p.category}</td><td>${p.price} ر.س</td><td>${p.stock}</td><td><button class="btn btn-danger" onclick="deleteProduct(${p.id})">حذف</button></td></tr>`).join('')}</tbody>
+          </table>
+        `;
+      } catch (e) { console.error('Error:', e); }
+    }
+
+    async function loadOrders() {
+      try {
+        const orders = await fetch('/api/admin/orders').then(r => r.json());
+        document.getElementById('ordersTable').innerHTML = `
+          <table>
+            <thead><tr><th>#</th><th>الزبون</th><th>الهاتف</th><th>المجموع</th><th>الحالة</th></tr></thead>
+            <tbody>${orders.map(o => `<tr><td>${o.id}</td><td>${o.customer.name}</td><td>${o.customer.phone}</td><td>${o.total} ر.س</td><td><span class="status ${o.status}">${o.status}</span></td></tr>`).join('')}</tbody>
+          </table>
+        `;
+      } catch (e) { console.error('Error:', e); }
+    }
+
+    async function loadReservations() {
+      try {
+        const reservations = await fetch('/api/admin/reservations').then(r => r.json());
+        document.getElementById('reservationsTable').innerHTML = `
+          <table>
+            <thead><tr><th>#</th><th>الاسم</th><th>الهاتف</th><th>الجهاز</th><th>الحالة</th></tr></thead>
+            <tbody>${reservations.map(r => `<tr><td>${r.id}</td><td>${r.name}</td><td>${r.phone}</td><td>${r.device}</td><td><span class="status ${r.status}">${r.status}</span></td></tr>`).join('')}</tbody>
+          </table>
+        `;
+      } catch (e) { console.error('Error:', e); }
+    }
+
+    async function loadMaintenance() {
+      try {
+        const maintenance = await fetch('/api/admin/maintenance').then(r => r.json());
+        document.getElementById('maintenanceTable').innerHTML = `
+          <table>
+            <thead><tr><th>#</th><th>الاسم</th><th>الجهاز</th><th>المشكلة</th><th>الحالة</th></tr></thead>
+            <tbody>${maintenance.map(m => `<tr><td>${m.id}</td><td>${m.name}</td><td>${m.device}</td><td>${m.issue}</td><td><span class="status ${m.status}">${m.status}</span></td></tr>`).join('')}</tbody>
+          </table>
+        `;
+      } catch (e) { console.error('Error:', e); }
+    }
+
+    async function loadInstallments() {
+      try {
+        const installments = await fetch('/api/admin/installments').then(r => r.json());
+        document.getElementById('installmentsTable').innerHTML = `
+          <table>
+            <thead><tr><th>#</th><th>الاسم</th><th>المنتج</th><th>المبلغ</th><th>الدفعة الشهرية</th></tr></thead>
+            <tbody>${installments.map(i => `<tr><td>${i.id}</td><td>${i.name}</td><td>${i.product}</td><td>${i.amount} ر.س</td><td>${i.monthlyPayment} ر.س</td></tr>`).join('')}</tbody>
+          </table>
+        `;
+      } catch (e) { console.error('Error:', e); }
+    }
+
+    async function loadEmployees() {
+      try {
+        const employees = await fetch('/api/admin/employees').then(r => r.json());
+        document.getElementById('employeesTable').innerHTML = `
+          <table>
+            <thead><tr><th>#</th><th>الاسم</th><th>البريد</th><th>الدور</th><th>الإجراءات</th></tr></thead>
+            <tbody>${employees.map(e => `<tr><td>${e.id}</td><td>${e.name}</td><td>${e.email}</td><td>${e.role}</td><td><button class="btn btn-danger" onclick="deleteEmployee(${e.id})">حذف</button></td></tr>`).join('')}</tbody>
+          </table>
+        `;
+      } catch (e) { console.error('Error:', e); }
+    }
+
+    async function loadReports() {
+      try {
+        const reports = await fetch('/api/admin/reports').then(r => r.json());
+        document.getElementById('reportsContent').innerHTML = `
+          <div class="stat-grid">
+            <div class="stat-card"><div class="label">إجمالي الطلبيات</div><div class="number">${reports.totalOrders}</div></div>
+            <div class="stat-card"><div class="label">الإيرادات</div><div class="number">${reports.totalRevenue}</div></div>
+            <div class="stat-card"><div class="label">الزبائن</div><div class="number">${reports.totalCustomers}</div></div>
+            <div class="stat-card"><div class="label">المخزون</div><div class="number">${reports.inventory}</div></div>
+          </div>
+        `;
+      } catch (e) { console.error('Error:', e); }
+    }
+
+    function showAddProduct() {
+      currentEditId = null;
+      document.getElementById('productName').value = '';
+      document.getElementById('productCategory').value = 'phones';
+      document.getElementById('productPrice').value = '';
+      document.getElementById('productStock').value = '';
+      document.getElementById('productDescription').value = '';
+      document.getElementById('productModal').classList.add('active');
+    }
+
+    async function saveProduct() {
+      const data = {
+        name: document.getElementById('productName').value,
+        category: document.getElementById('productCategory').value,
+        price: parseFloat(document.getElementById('productPrice').value),
+        stock: parseInt(document.getElementById('productStock').value),
+        description: document.getElementById('productDescription').value
+      };
+      try {
+        const url = currentEditId ? `/api/admin/products/${currentEditId}` : '/api/admin/products';
+        const method = currentEditId ? 'PUT' : 'POST';
+        await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+        alert('تم الحفظ بنجاح');
+        closeModal('productModal');
+        loadProducts();
+      } catch (e) { alert('خطأ: ' + e.message); }
+    }
+
+    async function deleteProduct(id) {
+      if (!confirm('هل تريد حذف هذا المنتج؟')) return;
+      try {
+        await fetch(`/api/admin/products/${id}`, { method: 'DELETE' });
+        loadProducts();
+      } catch (e) { alert('خطأ: ' + e.message); }
+    }
+
+    function showAddEmployee() {
+      currentEditId = null;
+      document.getElementById('employeeName').value = '';
+      document.getElementById('employeeEmail').value = '';
+      document.getElementById('employeeRole').value = 'admin';
+      document.getElementById('employeeModal').classList.add('active');
+    }
+
+    async function saveEmployee() {
+      const data = {
+        name: document.getElementById('employeeName').value,
+        email: document.getElementById('employeeEmail').value,
+        role: document.getElementById('employeeRole').value
+      };
+      try {
+        const url = currentEditId ? `/api/admin/employees/${currentEditId}` : '/api/admin/employees';
+        const method = currentEditId ? 'PUT' : 'POST';
+        await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+        alert('تم الحفظ بنجاح');
+        closeModal('employeeModal');
+        loadEmployees();
+      } catch (e) { alert('خطأ: ' + e.message); }
+    }
+
+    async function deleteEmployee(id) {
+      if (!confirm('هل تريد حذف هذا الموظف؟')) return;
+      try {
+        await fetch(`/api/admin/employees/${id}`, { method: 'DELETE' });
+        loadEmployees();
+      } catch (e) { alert('خطأ: ' + e.message); }
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).classList.remove('active');
+    }
+
+    document.querySelectorAll('.menu-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        const sectionId = this.dataset.section;
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+        document.getElementById(sectionId).classList.add('active');
+        document.querySelectorAll('.menu-btn').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        if (sectionId === 'dashboard') loadDashboard();
+        else if (sectionId === 'products') loadProducts();
+        else if (sectionId === 'orders') loadOrders();
+        else if (sectionId === 'reservations') loadReservations();
+        else if (sectionId === 'maintenance') loadMaintenance();
+        else if (sectionId === 'installments') loadInstallments();
+        else if (sectionId === 'employees') loadEmployees();
+        else if (sectionId === 'reports') loadReports();
+      });
+    });
+
+    loadDashboard();
+  </script>
+</body>
+</html>
