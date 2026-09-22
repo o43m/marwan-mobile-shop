@@ -1,0 +1,13 @@
+{
+  "name": "marwan-mobile-shop",
+  "version": "1.0.0",
+  "description": "Mobile shop application",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
+
