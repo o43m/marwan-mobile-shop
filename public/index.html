@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>مكتب مروان الخزعلي للموبايلات</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f5f5f5; color: #333; }
+    header { background: linear-gradient(135deg, #1a3a52 0%, #2c5aa0 100%); color: white; padding: 15px; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    header nav { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
+    header h1 { font-size: 18px; font-weight: bold; }
+    nav .menu { display: flex; gap: 20px; list-style: none; align-items: center; }
+    nav button, nav a { background: none; border: none; color: white; cursor: pointer; font-size: 14px; text-decoration: none; padding: 5px 10px; border-radius: 3px; transition: background 0.3s; }
+    nav button:hover, nav a:hover { background: rgba(255,255,255,0.2); }
+    .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+    .hero { background: linear-gradient(135deg, #2c5aa0 0%, #1a3a52 100%); color: white; padding: 40px 20px; border-radius: 8px; margin-bottom: 30px; text-align: center; }
+    .hero h2 { font-size: 28px; margin-bottom: 10px; }
+    .hero p { font-size: 16px; opacity: 0.9; }
+    .search-bar { margin: 20px 0; display: flex; gap: 10px; justify-content: center; }
+    .search-bar input { padding: 10px 15px; border: 1px solid #ddd; border-radius: 4px; width: 300px; max-width: 100%; }
+    .search-bar button { padding: 10px 20px; background: #2c5aa0; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
+    .categories { display: flex; gap: 15px; margin: 20px 0; justify-content: center; flex-wrap: wrap; }
+    .categories button { padding: 10px 20px; background: white; border: 2px solid #2c5aa0; color: #2c5aa0; border-radius: 4px; cursor: pointer; font-weight: bold; transition: all 0.3s; }
+    .categories button.active, .categories button:hover { background: #2c5aa0; color: white; }
+    .section { margin: 40px 0; }
+    .section h2 { color: #1a3a52; margin-bottom: 20px; font-size: 22px; border-bottom: 3px solid #2c5aa0; padding-bottom: 10px; }
+    .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; margin-top: 20px; }
+    .product-card { background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); transition: transform 0.3s, box-shadow 0.3s; cursor: pointer; }
+    .product-card:hover { transform: translateY(-5px); box-shadow: 0 4px 16px rgba(0,0,0,0.15); }
+    .product-image { width: 100%; height: 150px; background: linear-gradient(135deg, #e0e0e0 0%, #f0f0f0 100%); display: flex; align-items: center; justify-content: center; font-size: 12px; color: #999; position: relative; }
+    .product-image.has-offer::after { content: attr(data-offer); position: absolute; top: 10px; right: 10px; background: #e74c3c; color: white; padding: 5px 10px; border-radius: 4px; font-size: 12px; font-weight: bold; }
+    .product-info { padding: 15px; }
+    .product-name { font-weight: bold; color: #1a3a52; margin-bottom: 8px; }
+    .product-price { color: #2c5aa0; font-size: 16px; font-weight: bold; margin-bottom: 8px; }
+    .product-stock { font-size: 12px; color: #666; margin-bottom: 10px; }
+    .product-actions { display: flex; gap: 8px; }
+    .product-actions button { flex: 1; padding: 8px; background: #2c5aa0; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: bold; }
+    .product-actions button:hover { background: #1a3a52; }
+    .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; }
+    .modal.active { display: flex; }
+    .modal-content { background: white; padding: 30px; border-radius: 8px; max-width: 500px; width: 90%; max-height: 90vh; overflow-y: auto; position: relative; }
+    .modal-close { position: absolute; top: 10px; right: 10px; background: none; border: none; font-size: 24px; cursor: pointer; color: #666; }
+    .form-group { margin-bottom: 15px; }
+    .form-group label { display: block; margin-bottom: 5px; font-weight: bold; color: #1a3a52; }
+    .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-family: inherit; }
+    .form-group button { width: 100%; padding: 12px; background: #2c5aa0; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
+    .form-group button:hover { background: #1a3a52; }
+    .cart-icon { position: relative; font-size: 18px; }
+    .cart-count { position: absolute; top: -8px; right: -8px; background: #e74c3c; color: white; width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; }
+    .cart-item { background: #f9f9f9; padding: 12px; margin-bottom: 10px; border-radius: 4px; display: flex; justify-content: space-between; align-items: center; }
+    .cart-item-remove { background: #e74c3c; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer; font-size: 12px; }
+    .cart-total { font-size: 18px; font-weight: bold; color: #1a3a52; margin-bottom: 15px; text-align: center; }
+    .footer { background: #1a3a52; color: white; padding: 30px 20px; margin-top: 40px; }
+    .footer-content { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; }
+    .footer h3 { margin-bottom: 15px; color: #2c5aa0; }
+    .footer p, .footer a { font-size: 14px; line-height: 1.8; color: #bbb; text-decoration: none; display: block; margin-bottom: 8px; }
+    .footer a:hover { color: white; cursor: pointer; }
+    @media (max-width: 768px) {
+      nav .menu { flex-direction: column-reverse; gap: 10px; }
+      .hero h2 { font-size: 20px; }
+      .search-bar input { width: 100%; }
+      .products-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <nav>
+      <h1>🛒 مروان</h1>
+      <ul class="menu">
+        <li><button onclick="showSection('account')">حسابي</button></li>
+        <li><button onclick="showCart()" class="cart-icon">🛍️ <span class="cart-count" id="cartCount">0</span></button></li>
+        <li><a href="/admin">الإدارة</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <div class="container">
+    <div id="home-section">
+      <div class="hero">
+        <h2>🎉 مرحباً بك في مكتب مروان الخزعلي للموبايلات</h2>
+        <p>أفضل أجهزة الهواتف الذكية بأسعار منافسة</p>
+      </div>
+
+      <div class="search-bar">
+        <input type="text" id="searchInput" placeholder="ابحث عن منتج...">
+        <button onclick="searchProducts()">بحث</button>
+      </div>
+
+      <div class="categories" id="categoriesContainer"></div>
+
+      <div class="section">
+        <h2>🔥 العروضات</h2>
+        <div class="products-grid" id="featuredProducts"></div>
+      </div>
+
+      <div class="section">
+        <h2>📱 جميع المنتجات</h2>
+        <div class="products-grid" id="productsContainer"></div>
+      </div>
+    </div>
+
+    <div id="account-section" style="display: none;">
+      <h2>حسابي</h2>
+      <div style="background: white; padding: 20px; border-radius: 8px;">
+        <div class="form-group">
+          <label>رقم الهاتف (للتحقق)</label>
+          <input type="text" id="accountPhone" placeholder="أدخل رقم الهاتف">
+          <button onclick="loadAccount()" style="width: auto; padding: 8px 20px; margin-top: 10px;">تحميل</button>
+        </div>
+        <div id="accountInfo" style="display: none; margin-top: 20px;">
+          <h3>طلبياتي</h3>
+          <div id="myOrders" style="margin-bottom: 20px;"></div>
+          <h3>حجوزاتي</h3>
+          <div id="myReservations" style="margin-bottom: 20px;"></div>
+          <h3>طلبات الصيانة</h3>
+          <div id="myMaintenance" style="margin-bottom: 20px;"></div>
+          <h3>الأقساط</h3>
+          <div id="myInstallments"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="productModal" class="modal">
+    <div class="modal-content">
+      <button class="modal-close" onclick="closeProductModal()">×</button>
+      <div id="productModalContent"></div>
+    </div>
+  </div>
+
+  <div id="cartModal" class="modal">
+    <div class="modal-content">
+      <button class="modal-close" onclick="closeCart()">×</button>
+      <h2>🛍️ سلتي</h2>
+      <div id="cartItems"></div>
+      <div class="cart-total">المجموع: <span id="cartTotal">0</span> ر.س</div>
+      <div class="form-group">
+        <input type="text" id="customerName" placeholder="اسمك">
+        <input type="text" id="customerPhone" placeholder="رقم الهاتف">
+        <input type="email" id="customerEmail" placeholder="البريد الإلكتروني">
+        <button onclick="checkout()">إتمام الطلب</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="reservationModal" class="modal">
+    <div class="modal-content">
+      <button class="modal-close" onclick="closeReservation()">×</button>
+      <h2>احجز جهازك الآن</h2>
+      <div class="form-group">
+        <label>اسمك</label>
+        <input type="text" id="reserveName">
+        <label>رقم الهاتف</label>
+        <input type="text" id="reservePhone">
+        <label>الجهاز المطلوب</label>
+        <input type="text" id="reserveDevice">
+        <label>الموديل (اختياري)</label>
+        <input type="text" id="reserveModel">
+        <button onclick="submitReservation()">احجز الآن</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="maintenanceModal" class="modal">
+    <div class="modal-content">
+      <button class="modal-close" onclick="closeMaintenance()">×</button>
+      <h2>طلب صيانة</h2>
+      <div class="form-group">
+        <label>اسمك</label>
+        <input type="text" id="maintenanceName">
+        <label>رقم الهاتف</label>
+        <input type="text" id="maintenancePhone">
+        <label>الجهاز</label>
+        <input type="text" id="maintenanceDevice">
+        <label>المشكلة</label>
+        <textarea id="maintenanceIssue"></textarea>
+        <button onclick="submitMaintenance()">أرسل الطلب</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="installmentModal" class="modal">
+    <div class="modal-content">
+      <button class="modal-close" onclick="closeInstallment()">×</button>
+      <h2>استعلم عن الأقساط</h2>
+      <div class="form-group">
+        <label>اسمك</label>
+        <input type="text" id="installmentName">
+        <label>رقم الهاتف</label>
+        <input type="text" id="installmentPhone">
+        <label>المنتج</label>
+        <input type="text" id="installmentProduct">
+        <label>المبلغ المطلوب</label>
+        <input type="number" id="installmentAmount">
+        <label>عدد الأقساط</label>
+        <select id="installmentMonths">
+          <option value="3">3 أشهر</option>
+          <option value="6">6 أشهر</option>
+          <option value="12">12 شهر</option>
+        </select>
+        <button onclick="submitInstallment()">احسب الأقساط</button>
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <div class="footer-content">
+      <div>
+        <h3>عن المتجر</h3>
+        <p>مكتب مروان الخزعلي للموبايلات - تجارتك الموثوقة للهواتف الذكية</p>
+      </div>
+      <div>
+        <h3>التواصل</h3>
+        <p>📞 +966501234567</p>
+        <p>📧 info@marwan.sa</p>
+        <p>📍 الرياض، المملكة العربية السعودية</p>
+      </div>
+      <div>
+        <h3>خدماتنا</h3>
+        <a onclick="showReservation()">الحجز المسبق</a>
+        <a onclick="showMaintenance()">طلب الصيانة</a>
+        <a onclick="showInstallment()">الاستعلام عن الأقساط</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    let cart = [];
+    let allProducts = [];
+    let allCategories = [];
+
+    async function loadProducts() {
+      try {
+        const res = await fetch('/api/products');
+        allProducts = await res.json();
+        renderFeatured();
+        renderProducts(allProducts);
+      } catch (e) {
+        console.error('Error loading products:', e);
+      }
+    }
+
+    async function loadCategories() {
+      try {
+        const res = await fetch('/api/categories');
+        allCategories = await res.json();
+        renderCategories();
+      } catch (e) {
+        console.error('Error loading categories:', e);
+      }
+    }
+
+    function renderCategories() {
+      const container = document.getElementById('categoriesContainer');
+      container.innerHTML = '<button class="active" onclick="filterByCategory(null)">كل المنتجات</button>' +
+        allCategories.map(c => `<button onclick="filterByCategory('${c.id}')">${c.name}</button>`).join('');
+    }
+
+    function renderFeatured() {
+      const featured = allProducts.filter(p => p.featured && p.offer > 0).slice(0, 6);
+      document.getElementById('featuredProducts').innerHTML = featured.map(renderProduct).join('');
+    }
+
+    function renderProducts(products) {
+      document.getElementById('productsContainer').innerHTML = products.map(renderProduct).join('');
+    }
+
+    function renderProduct(p) {
+      return `
+        <div class="product-card" onclick="showProductDetail(${p.id})">
+          <div class="product-image" ${p.offer > 0 ? `data-offer="-${p.offer}%"` : ''}>📱</div>
+          <div class="product-info">
+            <div class="product-name">${p.name}</div>
+            <div class="product-price">${p.price} ر.س</div>
+            <div class="product-stock">${p.stock > 0 ? `متوفر (${p.stock})` : 'غير متوفر'}</div>
+            <div class="product-actions">
+              <button onclick="addToCart(event, ${p.id}, '${p.name}', ${p.price})">أضف للسلة</button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function filterByCategory(cat) {
+      const products = cat ? allProducts.filter(p => p.category === cat) : allProducts;
+      renderProducts(products);
+      document.querySelectorAll('.categories button').forEach(b => b.classList.remove('active'));
+      event.target.classList.add('active');
+    }
+
+    function searchProducts() {
+      const term = document.getElementById('searchInput').value.toLowerCase();
+      const results = allProducts.filter(p => p.name.includes(term) || p.description.includes(term));
+      renderProducts(results);
+    }
+
+    function showProductDetail(id) {
+      const product = allProducts.find(p => p.id === id);
+      if (!product) return;
+      document.getElementById('productModalContent').innerHTML = `
+        <h2>${product.name}</h2>
+        <p>${product.description}</p>
+        <div style="margin: 20px 0;">
+          <div><strong>السعر:</strong> ${product.price} ر.س</div>
+          <div><strong>الفئة:</strong> ${product.category}</div>
+          <div><strong>المخزون:</strong> ${product.stock}</div>
+        </div>
+        <button onclick="addToCart(event, ${product.id}, '${product.name}', ${product.price})" style="width: 100%; padding: 12px; background: #2c5aa0; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; margin-bottom: 10px;">أضف للسلة</button>
+        <button onclick="closeProductModal()" style="width: 100%; padding: 12px; background: #ccc; border: none; border-radius: 4px; cursor: pointer;">إغلق</button>
+      `;
+      document.getElementById('productModal').classList.add('active');
+    }
+
+    function closeProductModal() {
+      document.getElementById('productModal').classList.remove('active');
+    }
+
+    function addToCart(e, id, name, price) {
+      e.stopPropagation();
+      cart.push({ id, name, price, qty: 1 });
+      updateCartCount();
+      alert('تم إضافة المنتج للسلة');
+    }
+
+    function updateCartCount() {
+      document.getElementById('cartCount').textContent = cart.length;
+    }
+
+    function showCart() {
+      const cartItems = document.getElementById('cartItems');
+      const total = cart.reduce((sum, item) => sum + item.price, 0);
+      cartItems.innerHTML = cart.length ? cart.map((item, i) => `
+        <div class="cart-item">
+          <div>
+            <div style="font-weight: bold; color: #1a3a52;">${item.name}</div>
+            <div style="color: #2c5aa0;">${item.price} ر.س</div>
+          </div>
+          <button class="cart-item-remove" onclick="removeFromCart(${i})">حذف</button>
+        </div>
+      `).join('') : '<p style="text-align: center; color: #999;">السلة فارغة</p>';
+      document.getElementById('cartTotal').textContent = total.toFixed(0);
+      document.getElementById('cartModal').classList.add('active');
+    }
+
+    function closeCart() {
+      document.getElementById('cartModal').classList.remove('active');
+    }
+
+    function removeFromCart(i) {
+      cart.splice(i, 1);
+      updateCartCount();
+      showCart();
+    }
+
+    async function checkout() {
+      const name = document.getElementById('customerName').value;
+      const phone = document.getElementById('customerPhone').value;
+      const email = document.getElementById('customerEmail').value;
+      
+      if (!name || !phone || !cart.length) {
+        alert('الرجاء ملء البيانات واختيار منتجات');
+        return;
+      }
+
+      try {
+        const res = await fetch('/api/orders', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            customer: { name, phone, email },
+            items: cart,
+            total: cart.reduce((s, i) => s + i.price, 0)
+          })
+        });
+        const order = await res.json();
+        alert('تم الطلب بنجاح! رقم الطلب: ' + order.id);
+        cart = [];
+        updateCartCount();
+        closeCart();
+      } catch (e) {
+        alert('خطأ: ' + e.message);
+      }
+    }
+
+    function showReservation() { document.getElementById('reservationModal').classList.add('active'); }
+    function closeReservation() { document.getElementById('reservationModal').classList.remove('active'); }
+    async function submitReservation() {
+      const name = document.getElementById('reserveName').value;
+      const phone = document.getElementById('reservePhone').value;
+      const device = document.getElementById('reserveDevice').value;
+      const model = document.getElementById('reserveModel').value;
+      if (!name || !phone || !device) { alert('الرجاء ملء البيانات المطلوبة'); return; }
+      try {
+        await fetch('/api/reservations', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name, phone, device, model }) });
+        alert('تم تسجيل الحجز بنجاح!');
+        closeReservation();
+      } catch (e) { alert('خطأ: ' + e.message); }
+    }
+
+    function showMaintenance() { document.getElementById('maintenanceModal').classList.add('active'); }
+    function closeMaintenance() { document.getElementById('maintenanceModal').classList.remove('active'); }
+    async function submitMaintenance() {
+      const name = document.getElementById('maintenanceName').value;
+      const phone = document.getElementById('maintenancePhone').value;
+      const device = document.getElementById('maintenanceDevice').value;
+      const issue = document.getElementById('maintenanceIssue').value;
+      if (!name || !phone || !device || !issue) { alert('الرجاء ملء جميع الحقول'); return; }
+      try {
+        await fetch('/api/maintenance', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name, phone, device, issue }) });
+        alert('تم إرسال طلب الصيانة بنجاح!');
+        closeMaintenance();
+      } catch (e) { alert('خطأ: ' + e.message); }
+    }
+
+    function showInstallment() { document.getElementById('installmentModal').classList.add('active'); }
+    function closeInstallment() { document.getElementById('installmentModal').classList.remove('active'); }
+    async function submitInstallment() {
+      const name = document.getElementById('installmentName').value;
+      const phone = document.getElementById('installmentPhone').value;
+      const product = document.getElementById('installmentProduct').value;
+      const amount = parseFloat(document.getElementById('installmentAmount').value);
+      const months = parseInt(document.getElementById('installmentMonths').value);
+      if (!name || !phone || !product || !amount) { alert('الرجاء ملء جميع الحقول'); return; }
+      try {
+        const res = await fetch('/api/installments', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name, phone, product, amount, months }) });
+        const inst = await res.json();
+        alert(`دفعة شهرية: ${inst.monthlyPayment} ر.س لمدة ${months} شهر`);
+        closeInstallment();
+      } catch (e) { alert('خطأ: ' + e.message); }
+    }
+
+    function showSection(section) {
+      document.getElementById('home-section').style.display = section === 'home' ? 'block' : 'none';
+      document.getElementById('account-section').style.display = section === 'account' ? 'block' : 'none';
+    }
+
+    async function loadAccount() {
+      const phone = document.getElementById('accountPhone').value;
+      if (!phone) { alert('أدخل رقم الهاتف'); return; }
+      try {
+        const [orders, reservations, maintenance, installments] = await Promise.all([
+          fetch(`/api/orders/${phone}`).then(r => r.json()),
+          fetch(`/api/reservations/${phone}`).then(r => r.json()),
+          fetch(`/api/maintenance/${phone}`).then(r => r.json()),
+          fetch(`/api/installments/${phone}`).then(r => r.json())
+        ]);
+        document.getElementById('myOrders').innerHTML = orders.length ? orders.map(o => `<div style="background: #f9f9f9; padding: 12px; margin: 10px 0; border-radius: 4px;"><strong>الطلب #${o.id}</strong> - ${new Date(o.date).toLocaleDateString('ar')}<br>الحالة: ${o.status}<br>المجموع: ${o.total} ر.س</div>`).join('') : '<p>لا توجد طلبيات</p>';
+        document.getElementById('myReservations').innerHTML = reservations.length ? reservations.map(r => `<div style="background: #f9f9f9; padding: 12px; margin: 10px 0; border-radius: 4px;"><strong>${r.device}</strong><br>الحالة: ${r.status}</div>`).join('') : '<p>لا توجد حجوزات</p>';
+        document.getElementById('myMaintenance').innerHTML = maintenance.length ? maintenance.map(m => `<div style="background: #f9f9f9; padding: 12px; margin: 10px 0; border-radius: 4px;"><strong>${m.device}</strong> - ${m.issue}<br>الحالة: ${m.status}</div>`).join('') : '<p>لا توجد طلبات صيانة</p>';
+        document.getElementById('myInstallments').innerHTML = installments.length ? installments.map(i => `<div style="background: #f9f9f9; padding: 12px; margin: 10px 0; border-radius: 4px;"><strong>${i.product}</strong><br>الدفعة الشهرية: ${i.monthlyPayment} ر.س × ${i.months} شهر<br>الحالة: ${i.status}</div>`).join('') : '<p>لا توجد أقساط</p>';
+        document.getElementById('accountInfo').style.display = 'block';
+        showSection('account');
+      } catch (e) { alert('خطأ: ' + e.message); }
+    }
+
+    loadProducts();
+    loadCategories();
+  </script>
+</body>
+</html>
