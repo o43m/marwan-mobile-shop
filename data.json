@@ -1,0 +1,34 @@
+{
+  "products": [
+    {"id": 1, "name": "iPhone 15 Pro", "nameAr": "آيفون 15 برو", "price": 4499, "category": "phones", "image": "/img/iphone15.jpg", "stock": 15, "rating": 4.8, "reviews": 120, "description": "أحدث جيل من آيفون مع معالج A17 Pro", "offer": 10},
+    {"id": 2, "name": "Samsung Galaxy S24", "nameAr": "سامسونج جالاكسي S24", "price": 3999, "category": "phones", "image": "/img/galaxy.jpg", "stock": 12, "rating": 4.7, "reviews": 95, "description": "هاتف ذكي بأحدث تقنيات", "offer": 15},
+    {"id": 3, "name": "iPhone 14", "nameAr": "آيفون 14", "price": 3299, "category": "phones", "image": "/img/iphone14.jpg", "stock": 20, "rating": 4.6, "reviews": 200, "description": "جيل سابق بسعر مناسب", "offer": 5},
+    {"id": 4, "name": "iPhone 13", "nameAr": "آيفون 13", "price": 2699, "category": "phones", "image": "/img/iphone13.jpg", "stock": 25, "rating": 4.5, "reviews": 180, "description": "اختيار اقتصادي موثوق", "offer": 0},
+    {"id": 5, "name": "Galaxy A54", "nameAr": "جالاكسي A54", "price": 1999, "category": "phones", "image": "/img/galaxya54.jpg", "stock": 30, "rating": 4.3, "reviews": 150, "description": "هاتف متوازن بسعر جيد", "offer": 8},
+    {"id": 6, "name": "iPhone Screen Protector", "nameAr": "حامي شاشة آيفون", "price": 49, "category": "accessories", "image": "/img/protector.jpg", "stock": 100, "rating": 4.4, "reviews": 45, "description": "حامي زجاجي مقسى", "offer": 0},
+    {"id": 7, "name": "Charging Cable", "nameAr": "كابل الشحن", "price": 29, "category": "accessories", "image": "/img/cable.jpg", "stock": 150, "rating": 4.5, "reviews": 80, "description": "كابل شحن سريع أصلي", "offer": 20},
+    {"id": 8, "name": "Phone Case", "nameAr": "غطاء الهاتف", "price": 39, "category": "accessories", "image": "/img/case.jpg", "stock": 120, "rating": 4.3, "reviews": 60, "description": "حماية قوية وتصميم عصري", "offer": 0}
+  ],
+  "categories": [
+    {"id": "phones", "name": "Phones", "nameAr": "الهواتف"},
+    {"id": "accessories", "name": "Accessories", "nameAr": "الملحقات"}
+  ],
+  "users": [
+    {"id": 1, "name": "أحمد محمد", "email": "ahmed@example.com", "password": "123456", "phone": "0501234567", "type": "customer"},
+    {"id": 2, "name": "مدير النظام", "email": "admin@marwan.com", "password": "admin123", "phone": "0509876543", "type": "admin"},
+    {"id": 3, "name": "موظف المبيعات", "email": "sales@marwan.com", "password": "sales123", "phone": "0505555555", "type": "sales"}
+  ],
+  "reservations": [
+    {"id": 1, "customerName": "علي أحمد", "phone": "0501111111", "device": "iPhone 15 Pro", "date": "2026-09-25", "status": "pending", "createdAt": "2026-09-22T09:00:00Z"}
+  ],
+  "maintenanceRequests": [
+    {"id": 1, "customerName": "سارة محمد", "phone": "0502222222", "device": "iPhone 13", "issue": "شاشة مكسورة", "status": "in_progress", "createdAt": "2026-09-20T10:00:00Z"}
+  ],
+  "installments": [
+    {"id": 1, "customerName": "محمود علي", "phone": "0503333333", "device": "Samsung Galaxy S24", "totalPrice": 3999, "monthlyPayment": 399.9, "months": 10, "paidMonths": 3, "status": "active", "createdAt": "2026-08-22T09:00:00Z"}
+  ],
+  "orders": [
+    {"id": 1, "customerEmail": "ahmed@example.com", "items": [{"productId": 1, "quantity": 1, "price": 4499}], "totalPrice": 4499, "status": "delivered", "createdAt": "2026-09-10T09:00:00Z"}
+  ]
+}
+
