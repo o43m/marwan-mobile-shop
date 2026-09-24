@@ -2,11 +2,7 @@
   "name": "marwan-mobile-shop",
   "version": "1.0.0",
   "description": "مكتب مروان الخزعلي للموبايلات - Mobile Shop Application",
-  "main": "server.js",
-  "scripts": {
-    "start": "node server.js",
-    "dev": "node server.js"
-  },
+  "main": "index.html",
   "keywords": ["mobile", "shop", "marwan"],
   "author": "",
   "license": "ISC",
