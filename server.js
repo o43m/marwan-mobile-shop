@@ -388,6 +388,12 @@ const routes = {
 
 const server = http.createServer((req, res) => {
   const pathname = url.parse(req.url).pathname;
+if (pathname === '/') {
+  const html = fs.readFileSync('index.html', 'utf8');
+  res.writeHead(200, {'Content-Type': 'text/html; charset=utf-8'});
+  res.end(html);
+  return;
+}
   if (routes[pathname]) {
     routes[pathname](req, res);
   } else if (pathname.startsWith('/product/')) {
